@@ -285,9 +285,25 @@ def force_region_bind(region, jwt_token):
         request_retry('POST', url, data=bytes.fromhex(encrypted), headers=headers)
     except: pass
 
-def generate_random_name(name_prefix):
-    characters = string.ascii_letters + string.digits
-    return name_prefix + ''.join(random.choice(characters) for _ in range(6)).upper()
+# ========== GENERATE RANDOM NAME ==========
+def generate_exponent():
+    exp_digits = {'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'}
+    num = random.randint(1, 9999)
+    return ''.join(exp_digits[d] for d in f"{num:04d}")
+
+WRAPPING_PAIRS = [('꧁','꧂'),('『','』'),('【','】'),('《','》'),('〈','〉'),('〔','〕'),('〖','〗'),('〘','〙'),('〚','〛'),('❬','❭'),('❮','❯'),('⦅','⦆'),('⟦','⟧'),('⟨','⟩'),('⫷','⫸')]
+SINGLE_SYMBOLS = ['☆','★','✧','✦','✩','✪','✫','✬','✭','✮','✯','✰','♡','♥','❤','❥','❦','❧','ゝ','々','〆','⁂','※','⁑']
+
+def generate_random_name(base):
+    exponent = generate_exponent()
+    rand = random.random()
+    if rand < 0.4:
+        left, right = random.choice(WRAPPING_PAIRS)
+        return f"{left}{base}{right}{exponent}"
+    elif rand < 0.7:
+        return f"{base}{random.choice(SINGLE_SYMBOLS)}{exponent}"
+    else:
+        return f"{base}_{exponent}"
 
 # ========== RARITY PATTERNS & CHECKERS ==========
 PATTERNS = {
