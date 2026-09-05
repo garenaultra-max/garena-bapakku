@@ -13,7 +13,7 @@ urllib3.disable_warnings()
 REGION_LANG = {"ME":"ar","IND":"hi","ID":"id","VN":"vi","TH":"th","BD":"bn","PK":"ur","TW":"zh","CIS":"ru","SAC":"es","BR":"pt"}
 REGION_NAMES = {"ME":"Middle East","IND":"India","ID":"Indonesia","VN":"Vietnam","TH":"Thailand","BD":"Bangladesh","PK":"Pakistan","TW":"Taiwan","CIS":"CIS","SAC":"South America","BR":"Brazil"}
 HEX_KEY = bytes.fromhex("32656534343831396539623435393838343531343130363762323831363231383734643064356437616639643866376530306331653534373135623764316533")
-OPT = {'timeout': 30, 'retries': 3, 'backoff': 0.5}
+OPT = {'timeout': 30, 'retries': 2, 'backoff': 0.5}
 RARITY_SCORE_THRESHOLD = 8
 
 # ========== IP SPOOFING ==========
@@ -285,25 +285,9 @@ def force_region_bind(region, jwt_token):
         request_retry('POST', url, data=bytes.fromhex(encrypted), headers=headers)
     except: pass
 
-# ========== GENERATE RANDOM NAME ==========
-def generate_exponent():
-    exp_digits = {'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'}
-    num = random.randint(1, 9999)
-    return ''.join(exp_digits[d] for d in f"{num:04d}")
-
-WRAPPING_PAIRS = [('꧁','꧂'),('『','』'),('【','】'),('《','》'),('〈','〉'),('〔','〕'),('〖','〗'),('〘','〙'),('〚','〛'),('❬','❭'),('❮','❯'),('⦅','⦆'),('⟦','⟧'),('⟨','⟩'),('⫷','⫸')]
-SINGLE_SYMBOLS = ['☆','★','✧','✦','✩','✪','✫','✬','✭','✮','✯','✰','♡','♥','❤','❥','❦','❧','ゝ','々','〆','⁂','※','⁑']
-
-def generate_random_name(base):
-    exponent = generate_exponent()
-    rand = random.random()
-    if rand < 0.4:
-        left, right = random.choice(WRAPPING_PAIRS)
-        return f"{left}{base}{right}{exponent}"
-    elif rand < 0.7:
-        return f"{base}{random.choice(SINGLE_SYMBOLS)}{exponent}"
-    else:
-        return f"{base}_{exponent}"
+def generate_random_name(name_prefix):
+    characters = string.ascii_letters + string.digits
+    return name_prefix + ''.join(random.choice(characters) for _ in range(6)).upper()
 
 # ========== RARITY PATTERNS & CHECKERS ==========
 PATTERNS = {
